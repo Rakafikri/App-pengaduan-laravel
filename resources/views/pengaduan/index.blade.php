@@ -10,10 +10,15 @@
             
             <!-- Tombol Buat Laporan -->
             <div class="mb-4">
-                <a href="{{ route('pengaduan.create') }}" 
-                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    + Buat Laporan Baru
-                </a>
+                @if(auth()->user()->role !== 'admin')
+                    <div class="mb-4">
+                        <a href="{{ route('pengaduan.create') }}" 
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            + Buat Laporan Baru
+                        </a>
+                    </div>
+                @endif
+                
             </div>
 
             <!-- Pesan Sukses -->
