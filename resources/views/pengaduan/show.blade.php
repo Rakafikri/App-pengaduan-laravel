@@ -29,7 +29,7 @@
                             </tr>
                             <tr class="border-b">
                                 <td class="py-2 font-semibold">Pelapor</td>
-                                <td class="py-2">{{ $pengaduan->user->nama ?? 'Anonim' }}</td>
+                                <td class="py-2">{{ $pengaduan->user->name ?? 'Anonim' }}</td>
                             </tr>
                             <tr class="border-b">
                                 <td class="py-2 font-semibold">Tanggal</td>

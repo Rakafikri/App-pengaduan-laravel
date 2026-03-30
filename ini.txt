@@ -1,0 +1,7 @@
+command tinker buat bikin admin
+\App\Models\User::create([
+    'name' => 'Admin Sekolah',
+    'email' => 'admin@sekolah.id',
+    'password' => bcrypt('password123'),
+    'role' => 'admin',
+]);

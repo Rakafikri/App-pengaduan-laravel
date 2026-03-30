@@ -40,7 +40,7 @@
                             @forelse($pengaduan as $item)
                                 <tr class="border-b hover:bg-gray-50">
                                     <td class="py-3">{{ $loop->iteration }}</td>
-                                    <td class="py-3">{{ $item->user->nama ?? 'Anonim' }}</td>
+                                    <td class="py-3">{{ $item->user->name ?? 'Anonim' }}</td>
                                     <td class="py-3">{{ Str::limit($item->pesan_laporan, 50) }}</td>
                                     <td class="py-3">
                                         @php

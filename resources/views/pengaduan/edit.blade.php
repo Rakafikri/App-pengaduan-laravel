@@ -27,7 +27,7 @@
                             <h3 class="font-bold mb-2">Laporan #{{ $pengaduan->id }}</h3>
                             <p class="text-gray-700">{{ $pengaduan->pesan_laporan }}</p>
                             <p class="text-sm text-gray-500 mt-2">
-                                Pelapor: {{ $pengaduan->user->nama ?? 'Anonim' }} | 
+                                Pelapor: {{ $pengaduan->user->name ?? 'Anonim' }} | 
                                 Tanggal: {{ $pengaduan->created_at->format('d M Y, H:i') }}
                             </p>
                         </div>
