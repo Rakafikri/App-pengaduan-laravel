@@ -30,13 +30,11 @@ class PengaduanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kategori' => 'required|string|max:255',
             'pesan_laporan' => 'required|string',
         ]);
 
         Pengaduan::create([
             'user_id' => auth()->id(),
-            'kategori' => $request->kategori,
             'pesan_laporan' => $request->pesan_laporan,
             'status' => 'pending',
         ]);
