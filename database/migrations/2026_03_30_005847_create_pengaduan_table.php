@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('pengaduan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('kategori');
             $table->text('pesan_laporan');
             $table->enum('status', ['pending', 'proses', 'selesai', 'ditolak'])->default('pending');
             $table->text('tanggapan_admin')->nullable();
