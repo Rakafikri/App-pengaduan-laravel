@@ -8,20 +8,16 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            if (auth()->user()->role !== 'admin') {
-                abort(403, 'Unauthorized access.');
-            }
-            return $next($request);
-        });
-    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        // Cek apakah admin
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
         $users = User::where('role', '!=', 'admin')->latest()->paginate(10);
         return view('users.index', compact('users'));
     }
@@ -31,6 +27,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
         return view('users.create');
     }
 
@@ -39,6 +39,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -61,6 +65,10 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
         return view('users.show', compact('user'));
     }
 
@@ -69,6 +77,10 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
         return view('users.edit', compact('user'));
     }
 
@@ -77,17 +89,28 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'role' => 'required|in:siswa,guru',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
 
-        $user->update([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
-        ]);
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $user->update($data);
 
         return redirect()->route('users.index')->with('success', 'User berhasil diupdate!');
     }
@@ -97,10 +120,17 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Unauthorized access.');
+        }
+
         // Tidak bisa hapus admin
         if ($user->role === 'admin') {
             return redirect()->route('users.index')->with('error', 'Tidak dapat menghapus admin!');
         }
+
+        // Set admin_id ke NULL untuk laporan yang dihandle user ini
+        \App\Models\Pengaduan::where('admin_id', $user->id)->update(['admin_id' => null]);
 
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus!');

@@ -16,9 +16,19 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('pengaduan.index')" :active="request()->routeIs('pengaduan.*')">
-                        {{ __('Pengaduan') }}
-                    </x-nav-link>
+                    <!-- Menu Pengaduan. hanya untuk siswa dan guru -->
+                    @if(auth()->user()->role === 'siswa' || auth()->user()->role === 'guru')
+                        <x-nav-link :href="route('pengaduan.index')" :active="request()->routeIs('pengaduan.*')">
+                            {{ __('Pengaduan') }}
+                        </x-nav-link>
+                    @endif
+                    
+                    <!-- Menu kelola user. hanya untuk admin -->
+                    @if(auth()->user()->role === 'admin')
+                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                            {{ __('Kelola User') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -74,7 +84,19 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-
+            <!-- Menu pengaduan. hanya untuk siswa dan guru -->
+            @if(auth()->user()->role === 'siswa' || auth()->user()->role === 'guru')
+                <x-responsive-nav-link :href="route('pengaduan.index')" :active="request()->routeIs('pengaduan.*')">
+                    {{ __('Pengaduan') }}
+                </x-responsive-nav-link>
+            @endif
+            
+            <!-- Menu kelola user. hanya untuk admin -->
+            @if(auth()->user()->role === 'admin')
+                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                    {{ __('Kelola User') }}
+                </x-responsive-nav-link>
+            @endif
             <x-responsive-nav-link :href="route('pengaduan.index')" :active="request()->routeIs('pengaduan.*')">
                 {{ __('Pengaduan') }}
             </x-responsive-nav-link>

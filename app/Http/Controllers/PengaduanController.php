@@ -12,7 +12,13 @@ class PengaduanController extends Controller
      */
     public function index()
     {
-        $pengaduan = Pengaduan::with('user')->latest()->paginate(10);
+        // Siswa hanya lihat laporan sendiri, Guru lihat semua
+        if (auth()->user()->role === 'siswa') {
+            $pengaduan = Pengaduan::where('user_id', auth()->id())->latest()->paginate(10);
+        } else {
+            $pengaduan = Pengaduan::with('user')->latest()->paginate(10);
+        }
+        
         return view('pengaduan.index', compact('pengaduan'));
     }
 
@@ -21,6 +27,11 @@ class PengaduanController extends Controller
      */
     public function create()
     {
+        // Hanya siswa yang bisa buat laporan
+        if (auth()->user()->role !== 'siswa') {
+            abort(403, 'Hanya siswa yang dapat membuat laporan.');
+        }
+        
         return view('pengaduan.create');
     }
 
@@ -29,6 +40,11 @@ class PengaduanController extends Controller
      */
     public function store(Request $request)
     {
+        // Hanya siswa yang bisa store laporan
+        if (auth()->user()->role !== 'siswa') {
+            abort(403, 'Hanya siswa yang dapat membuat laporan.');
+        }
+
         $request->validate([
             'pesan_laporan' => 'required|string',
         ]);
@@ -47,6 +63,11 @@ class PengaduanController extends Controller
      */
     public function show(Pengaduan $pengaduan)
     {
+        // Siswa hanya bisa lihat laporan sendiri, Guru bisa lihat semua
+        if (auth()->user()->role === 'siswa' && $pengaduan->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak dapat melihat laporan ini.');
+        }
+        
         return view('pengaduan.show', compact('pengaduan'));
     }
 
@@ -55,6 +76,11 @@ class PengaduanController extends Controller
      */
     public function edit(Pengaduan $pengaduan)
     {
+        // Hanya guru yang bisa edit status laporan
+        if (auth()->user()->role !== 'guru') {
+            abort(403, 'Hanya guru yang dapat mengupdate status laporan.');
+        }
+        
         return view('pengaduan.edit', compact('pengaduan'));
     }
 
@@ -63,6 +89,11 @@ class PengaduanController extends Controller
      */
     public function update(Request $request, Pengaduan $pengaduan)
     {
+        // Hanya guru yang bisa update status laporan
+        if (auth()->user()->role !== 'guru') {
+            abort(403, 'Hanya guru yang dapat mengupdate status laporan.');
+        }
+
         $request->validate([
             'status' => 'required|in:pending,proses,selesai,ditolak',
             'tanggapan_admin' => 'nullable|string',
@@ -83,6 +114,11 @@ class PengaduanController extends Controller
      */
     public function destroy(Pengaduan $pengaduan)
     {
+        // Hanya guru yang bisa hapus laporan
+        if (auth()->user()->role !== 'guru') {
+            abort(403, 'Hanya guru yang dapat menghapus laporan.');
+        }
+        
         $pengaduan->delete();
         return redirect()->route('pengaduan.index')->with('success', 'Laporan berhasil dihapus!');
     }

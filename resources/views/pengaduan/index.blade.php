@@ -29,63 +29,79 @@
             @endif
 
             <!-- Tabel Daftar Pengaduan -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    <table class="min-w-full">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="py-2 text-left">No</th>
-                                <th class="py-2 text-left">Pelapor</th>
-                                <th class="py-2 text-left">Pesan</th>
-                                <th class="py-2 text-left">Status</th>
-                                <th class="py-2 text-left">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($pengaduan as $item)
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="py-3">{{ $loop->iteration }}</td>
-                                    <td class="py-3">{{ $item->user->name ?? 'Anonim' }}</td>
-                                    <td class="py-3">{{ Str::limit($item->pesan_laporan, 50) }}</td>
-                                    <td class="py-3">
-                                        @php
-                                            $statusColor = [
-                                                'pending' => 'bg-yellow-100 text-yellow-800',
-                                                'proses' => 'bg-blue-100 text-blue-800',
-                                                'selesai' => 'bg-green-100 text-green-800',
-                                                'ditolak' => 'bg-red-100 text-red-800',
-                                            ];
-                                        @endphp
-                                        <span class="{{ $statusColor[$item->status] ?? 'bg-gray-100' }} px-2 py-1 rounded text-sm">
-                                            {{ ucfirst($item->status) }}
-                                        </span>
-                                    </td>
-                                    <td class="py-3">
-                                        <a href="{{ route('pengaduan.show', $item->id) }}" 
-                                           class="text-blue-600 hover:text-blue-900 mr-2">
-                                            Lihat
-                                        </a>
-                                        @if(auth()->user()->role === 'admin')
-                                            <a href="{{ route('pengaduan.edit', $item->id) }}" 
-                                               class="text-green-600 hover:text-green-900 mr-2">
-                                                Edit
-                                            </a>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="py-4 text-center text-gray-500">
-                                        Belum ada laporan pengaduan.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="py-2 text-left">No</th>
 
-                    <!-- Pagination -->
-                    <div class="mt-4">
-                        {{ $pengaduan->links() }}
+                                    <!-- Kolom pelapor. hanya untuk guru -->
+                                    @if(auth()->user()->role === 'guru')
+                                        <th class="py-2 text-left">Pelapor</th>
+                                    @endif
+
+                                    <th class="py-2 text-left">Pesan</th>
+                                    <th class="py-2 text-left">Status</th>
+                                    <th class="py-2 text-left">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($pengaduan as $item)
+                                    <tr class="border-b hover:bg-gray-50">
+                                        <td class="py-3">{{ $loop->iteration }}</td>
+
+                                        <!-- Kolom pelapor. hanya untuk guru -->
+                                        @if(auth()->user()->role === 'guru')
+                                            <td class="py-3">{{ $item->user->name ?? 'Anonim' }}</td>
+                                        @endif
+
+                                        <td class="py-3">{{ Str::limit($item->pesan_laporan, 50) }}</td>
+                                        <td class="py-3">
+                                            @php
+                                                $statusColor = [
+                                                    'pending' => 'bg-yellow-100 text-yellow-800',
+                                                    'proses' => 'bg-blue-100 text-blue-800',
+                                                    'selesai' => 'bg-green-100 text-green-800',
+                                                    'ditolak' => 'bg-red-100 text-red-800',
+                                                ];
+                                            @endphp
+                                            <span class="{{ $statusColor[$item->status] ?? 'bg-gray-100' }} px-2 py-1 rounded text-sm">
+                                                {{ ucfirst($item->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3">
+                                            <a href="{{ route('pengaduan.show', $item->id) }}" 
+                                               class="text-blue-600 hover:text-blue-900 mr-2">
+                                                Lihat
+                                            </a>
+
+                                            <!-- Tombol Edit - HANYA untuk Guru -->
+                                            @if(auth()->user()->role === 'guru')
+                                                <a href="{{ route('pengaduan.edit', $item->id) }}" 
+                                                   class="text-green-600 hover:text-green-900">
+                                                    Edit
+                                                </a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="{{ auth()->user()->role === 'guru' ? '5' : '4' }}" class="py-4 text-center text-gray-500">
+                                            @if(auth()->user()->role === 'siswa')
+                                                Belum ada laporan yang kamu buat.
+                                            @else
+                                                Belum ada laporan pengaduan.
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                        <!-- Pagination -->
+                        <div class="mt-4">
+                            {{ $pengaduan->links() }}
+                        </div>
                     </div>
                 </div>
             </div>
